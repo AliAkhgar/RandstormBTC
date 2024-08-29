@@ -190,7 +190,7 @@ function integerToBytes(i, len) {
   
   Bitcoin.ECDSA = (function () {
     var ecparams = getSECCurveByName("secp256k1");
-    var rng = new SecureRandom();
+    
   
     var P_OVER_FOUR = null;
   
@@ -223,6 +223,9 @@ function integerToBytes(i, len) {
   
     var ECDSA = {
       getBigRandom: function (limit) {
+
+        //moved here 
+        var rng = new SecureRandom();
         return new globalThis.BigInteger(limit.bitLength(), rng)
           .mod(limit.subtract(globalThis.BigInteger.ONE))
           .add(globalThis.BigInteger.ONE)

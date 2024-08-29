@@ -20,7 +20,8 @@ import { createClient } from 'redis';
 import readline from 'readline'
 import fs from 'fs'
 import process from 'process'
-
+import cluster from 'cluster'
+import { exec } from 'child_process'
 
 /**
  * Load Redis
@@ -28,7 +29,7 @@ import process from 'process'
 var client = null
 try {
     client = createClient({
-        url: 'redis://default:1234@192.168.0.144:6379'
+        url: 'redis://default:1234@127.0.0.1:6379'
     })
     
     await client.connect();
@@ -38,7 +39,7 @@ try {
 }
 
 //Load the file into redis
-const LOAD  = true
+const LOAD  = false
 if (LOAD==true){
     try{
         
@@ -50,11 +51,11 @@ if (LOAD==true){
         var i = 1;
         var wallets = []
         readInterface.on('line', function(line) {
-            console.log(i);
-            if(!line.startsWith("1") || i>22685755){
+            if(!line.startsWith("1") || i>22685755){ //22685755
                 readInterface.close()
                 return;
             }
+            console.log(i);
             console.clear()
             wallets.push(line)
             i++;
@@ -62,10 +63,12 @@ if (LOAD==true){
 
         //start by loading into redis
         readInterface.on('close',async()=>{
-            for (var i=0;i<wallets.length;i++){
-                await client.set(wallets[i],"1")
+            var x = wallets.length-1;
+            while (x--){
+                await client.set(wallets[x],"1")
+                delete wallets[x]
                 console.clear()
-                console.log("Loading > ",i)
+                console.log("Loading > ",x)
             }
             console.log("Load Finished.")
             process.exit(0)
@@ -80,19 +83,47 @@ if (LOAD==true){
 }
 
 
-
-var i =0;
-while (!LOAD &&  i<1){
-    var btc = new Bitcoin.ECKey();
-    console.log("Private Key > ",btc.getExportedPrivateKey())
-    console.log("Private Key Hex> ",btc.toString())
-
-    console.log("BTC Addr> ",btc.getBitcoinAddress().toString())
-    console.log("Pub Addr> ",Base58.encode(btc.getPub()))
+if (cluster.isPrimary) {
+	cluster.fork();
+	//cluster.fork();
+	//cluster.fork();
+	//cluster.fork();
+}else{
+    var i =0;
+    console.time('test'+process?.pid);
+    while (!LOAD &&  i<3){
     
-    i++;
+        //console.clear()
+        var btc = new Bitcoin.ECKey();
+        //console.log("Private Key > ",btc.getExportedPrivateKey())
+        //console.log("Private Key Hex> ",btc.toString())
+     
+        console.log("Worker Pid >",process?.pid," Testing > ",btc.getBitcoinAddress().toString()," | ",i)
+        //console.log("Pub Addr> ",Base58.encode(btc.getPub()))
+        const res = await client.get(btc.getBitcoinAddress().toString())//Base58.encode(btc.getPub()) 
+        if (res!=null){
+            var cont = `PV: ${btc.getExportedPrivateKey()}  \n
+             PVHEX: ${btc.toString()} \n
+             Pub: ${Base58.encode(btc.getPub())}  \n
+             Addr: ${btc.getBitcoinAddress().toString()}  \n
+        `
+            console.log(">>> Found, Exit,",cont)
+            fs.writeFile("./"+btc.getExportedPrivateKey()[0]+process?.pid+".txt",
+            cont, function(err) {
+                if(err) {
+                    return console.log(err);
+                }
+                console.log("The file was saved!");
+            }); 
+            break;
+        }    
+        i++;
+    }
+    console.timeEnd('test'+process?.pid);
+    console.log(process?.pid)
 }
 
 
+//process.exit(0)
 
 
