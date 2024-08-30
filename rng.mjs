@@ -108,7 +108,6 @@ class SecureRandom {
 
     // Mix in the current time (w/milliseconds) into the pool
      rng_seed_time(ctx) {
-      return;
     // console.log(new Date().getTime())
       this.rng_seed_int(this.seed);
       console.log(">>> Time seeded.")
