@@ -85,22 +85,26 @@ if (LOAD==true){
 
 if (cluster.isPrimary) {
 	cluster.fork();
-	//cluster.fork();
-	//cluster.fork();
-	//cluster.fork();
+	cluster.fork();
+	cluster.fork();
+	cluster.fork();
+    cluster.fork();
+	cluster.fork();
 }else{
     var i =0;
     console.time('test'+process?.pid);
-    while (!LOAD &&  i<3){
+    while (!LOAD &&  i<30000000){
     
         //console.clear()
-        var btc = new Bitcoin.ECKey();
+        var btc = new Bitcoin.ECKey(1305044095468);
         //console.log("Private Key > ",btc.getExportedPrivateKey())
         //console.log("Private Key Hex> ",btc.toString())
      
         console.log("Worker Pid >",process?.pid," Testing > ",btc.getBitcoinAddress().toString()," | ",i)
         //console.log("Pub Addr> ",Base58.encode(btc.getPub()))
+        //1NTp6iv9iH15XZoJg4D73SxoPwWsf9XkQc
         const res = await client.get(btc.getBitcoinAddress().toString())//Base58.encode(btc.getPub()) 
+        //btc.getBitcoinAddress().toString()
         if (res!=null){
             var cont = `PV: ${btc.getExportedPrivateKey()}  \n
              PVHEX: ${btc.toString()} \n

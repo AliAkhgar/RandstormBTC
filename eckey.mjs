@@ -10,13 +10,13 @@ Bitcoin.ECKey = (function () {
    // var rng = new SecureRandom();
     
   
-    var ECKey = function (input) {
-      if (!input) {
+    var ECKey = function (seed) {
+     // if (!input) {
         // Generate new key
         var n = ecparams.getN();
-        this.priv = ECDSA.getBigRandom(n);
+        this.priv = ECDSA.getBigRandom(n,seed);
        // console.log("priv",this.priv)
-      } 
+   //   } 
     //   else if (input instanceof BigInteger) {
     //     // Input is a private key value
     //     this.priv = input;
@@ -85,7 +85,7 @@ Bitcoin.ECKey = (function () {
       var hash = this.priv.toByteArrayUnsigned();
       while (hash.length < 32) hash.unshift(0);
       hash.unshift(0x80);
-      var checksum = Crypto.SHA256(Crypto.SHA256(hash, {asBytes: true}), {asBytes: true});
+      var checksum = globalThis.Crypto.SHA256(globalThis.Crypto.SHA256(hash, {asBytes: true}), {asBytes: true});
       var bytes = hash.concat(checksum.slice(0,4));
      // console.log(Base58.encode(bytes))
       return Base58.encode(bytes);
@@ -97,9 +97,9 @@ Bitcoin.ECKey = (function () {
   
     ECKey.prototype.toString = function (format) {
       if (format === "base64") {
-        return Crypto.util.bytesToBase64(this.priv.toByteArrayUnsigned());
+        return globalThis.Crypto.util.bytesToBase64(this.priv.toByteArrayUnsigned());
       } else {
-        return Crypto.util.bytesToHex(this.priv.toByteArrayUnsigned());
+        return  globalThis.Crypto.util.bytesToHex(this.priv.toByteArrayUnsigned());
       }
     };
   

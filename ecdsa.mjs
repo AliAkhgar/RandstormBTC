@@ -222,10 +222,10 @@ function integerToBytes(i, len) {
     };
   
     var ECDSA = {
-      getBigRandom: function (limit) {
+      getBigRandom: function (limit,seed) {
 
         //moved here 
-        var rng = new SecureRandom();
+        var rng = new SecureRandom(seed);
         return new globalThis.BigInteger(limit.bitLength(), rng)
           .mod(limit.subtract(globalThis.BigInteger.ONE))
           .add(globalThis.BigInteger.ONE)
