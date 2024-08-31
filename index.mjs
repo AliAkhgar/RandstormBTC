@@ -88,15 +88,15 @@ if (cluster.isPrimary) {
 	cluster.fork();
 	cluster.fork();
 	cluster.fork();
-    cluster.fork();
-	cluster.fork();
+    //cluster.fork();
+	//cluster.fork();
 }else{
     var i =0;
     console.time('test'+process?.pid);
     while (!LOAD &&  i<30000000){
     
         //console.clear()
-        var btc = new Bitcoin.ECKey(1305044095468);
+        var btc = new Bitcoin.ECKey(1305044095468 + Math.floor(i/(10000)));
         //console.log("Private Key > ",btc.getExportedPrivateKey())
         //console.log("Private Key Hex> ",btc.toString())
      
