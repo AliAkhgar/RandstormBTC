@@ -1,3 +1,8 @@
+<p align="center">
+<img src="https://raw.githubusercontent.com/aliakhgar/randstormBTC/master/rnds0.png" alt="Randstorm Bitcoin" width="300" height="300">
+</p>
+
+
 ### Overview
 
 This repo is only a PoC of the vulnerability, and it does not offer any definitive result as its only aimed to be for research information. Please note that this article is not for newcomers looking into this vulnerability, as some basis is not explained.
