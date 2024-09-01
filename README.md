@@ -118,7 +118,7 @@ There has been reports and researches that show successful exploitation of Rands
 
 Keeping in mind that Randstorm indeed is a vulnerability, after many careful code examination, it does not some to be a so vulnerable as it looks. Lets take a look at steps and efforts are required to successfully exploit Randstorm.
 
-###MWC1616 Prediction
+### MWC1616 Prediction
 One of the key players in Randstorm is MWC1616 prediction which has been successfully done through Z3 and also UncipheredLabs announced that they had successfully predicted the MWC1616 in order to uncover a wallet Private-Key.
 Without using the original MWC1616 or not predicting the values, attackers would likely end up in a dead end already; But is that really that easy to do so?
 
