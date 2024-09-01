@@ -103,7 +103,7 @@ As can be seen on lines 9 and 11, there were plans for reseeding or regeneration
 # A Quick Glance
 If we plan to traditionally visualize this process of `SecureRandom` initialization and wallet generations, it would be something like this.
 
-![](https://storage.yaslab.org/rnds1.jpg)
+![](https://raw.githubusercontent.com/aliakhgar/randstormBTC/master/rnds1.jpg)
 
 But there are still many missing things about the visualization above and the vulnerability itself as reports on the internet shows, however many websites used Bitcoinlib-JS to generate wallets, many of them introduced their own source of entropy to the code.
 Some websites used `window.x` and `window.y` as seed, which is still considered weak, but some other services have used **user interactions** to achieve greater and more secure randomness.
@@ -127,7 +127,7 @@ By looking into **the V8 Engine** used in **Chromium** prior to version 49, we c
 Even if attackers predict the random outputs, they would probably achieve many hypothetical correctly-guessed sequence of random numbers. In these situations, generated data is far beyond a 256-bit pool and is only a very large correct sequence.
 So what they would end up is likely to be like a pre-recorded film, just need to extract a correct 256-bit array of it!
 
-![](https://storage.yaslab.org/rnds2.jpg)
+![](https://raw.githubusercontent.com/aliakhgar/randstormBTC/master/rnds2.jpg)
 
 ### Pool Seed
 Even though MCW1616 prediction might be the hardest thing to do, correctly seeding the pool with exact Unix time is another thing. The way it works in most cases is to limit the time of wallet creation to month, weeks or even days!
