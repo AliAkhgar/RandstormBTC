@@ -24,19 +24,32 @@ function DeterministicRandom() {
 // } 
 
 var MAX_RAND = Math.pow(2, 32);
-var state = [1, 2];
 
-var mwc1616 = function mwc1616() {
-    var r0 = (18030 * (state[0] & 0xFFFF)) + (state[0] >>> 16) | 0;
-    var r1 = (36969 * (state[1] & 0xFFFF)) + (state[1] >>> 16) | 0;
-    state = [r0, r1];
-
-    var x = ((r0 << 16) + (r1 & 0xFFFF)) | 0;
-    if (x < 0) {
-        x = x + MAX_RAND;
+// Global MWC1616 implementation for deterministic behavior
+class MWC1616 {
+    constructor(seed1 = 1, seed2 = 2) {
+        this.state = [seed1 & 0xFFFFFFFF, seed2 & 0xFFFFFFFF];
     }
-    console.log(state)
-    return x / MAX_RAND;
+
+    // Set seeds based on timestamp for deterministic behavior
+    seedFromTimestamp(timestamp) {
+        // Use timestamp to derive two seeds deterministically
+        const seed1 = (timestamp & 0xFFFFFFFF) ^ 0x12345678;
+        const seed2 = ((timestamp >>> 16) & 0xFFFFFFFF) ^ 0x87654321;
+        this.state = [seed1, seed2];
+    }
+
+    nextRandom() {
+        var r0 = (18030 * (this.state[0] & 0xFFFF)) + (this.state[0] >>> 16) | 0;
+        var r1 = (36969 * (this.state[1] & 0xFFFF)) + (this.state[1] >>> 16) | 0;
+        this.state = [r0, r1];
+
+        var x = ((r0 << 16) + (r1 & 0xFFFF)) | 0;
+        if (x < 0) {
+            x = x + MAX_RAND;
+        }
+        return x / MAX_RAND;
+    }
 }
 
 
@@ -52,14 +65,17 @@ var mwc1616 = function mwc1616() {
 class SecureRandom {
   constructor(seed) {
     this.seed = seed
-    //move 
-    // Initialize the pool with junk if needed.
+    this.mwc = new MWC1616();
+    this.mwc.seedFromTimestamp(seed);
+    
+    // Initialize the pool with deterministic randomness
     if (this.rng_pool == null) {
       this.rng_pool = new Array();
       this.rng_pptr = 0;
       var t;
-      while (this.rng_pptr < rng_psize) { // extract some randomness from Math.random()
-        t = Math.floor(65536 * Math.random());
+      while (this.rng_pptr < rng_psize) { 
+        // Use deterministic MWC1616 instead of Math.random()
+        t = Math.floor(65536 * this.mwc.nextRandom());
         this.rng_pool[this.rng_pptr++] = t >>> 8;
         this.rng_pool[this.rng_pptr++] = t & 255;
       }
@@ -109,6 +125,7 @@ class SecureRandom {
     // Mix in the current time (w/milliseconds) into the pool
      rng_seed_time(ctx) {
     // console.log(new Date().getTime())
+      // Use the seed directly for deterministic behavior
       this.rng_seed_int(this.seed);
       console.log(">>> Time seeded.")
     }
