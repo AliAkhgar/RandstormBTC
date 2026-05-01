@@ -10,29 +10,16 @@ Bitcoin.ECKey = (function () {
    // var rng = new SecureRandom();
     
   
-    var ECKey = function (seed) {
-     // if (!input) {
-        // Generate new key
-        var n = ecparams.getN();
-        this.priv = ECDSA.getBigRandom(n,seed);
-       // console.log("priv",this.priv)
-   //   } 
-    //   else if (input instanceof BigInteger) {
-    //     // Input is a private key value
-    //     this.priv = input;
-    //   } else if (Bitcoin.Util.isArray(input)) {
-    //     // Prepend zero byte to prevent interpretation as negative integer
-    //     this.priv = BigInteger.fromByteArrayUnsigned(input);
-    //   } else if ("string" == typeof input) {
-    //     if (input.length == 51 && input[0] == '5') {
-    //       // Base58 encoded private key
-    //       this.priv = BigInteger.fromByteArrayUnsigned(ECKey.decodeString(input));
-    //     } else {
-    //       // Prepend zero byte to prevent interpretation as negative integer
-    //       this.priv = BigInteger.fromByteArrayUnsigned(Crypto.util.base64ToBytes(input));
-    //     }
-    //   }
-      this.compressed = true //!!ECKey.compressByDefault;
+    var ECKey = function (seed, opts) {
+      // Generate new key from a Randstorm-style candidate seed.
+      // `seed` is forwarded to SecureRandom. See rng.mjs for accepted shapes.
+      var n = ecparams.getN();
+      this.priv = ECDSA.getBigRandom(n, seed);
+      // Bitcoinlib-JS in the Randstorm era defaulted compressByDefault = false,
+      // so historical wallets are uncompressed. Allow caller override for completeness.
+      this.compressed = (opts && typeof opts.compressed === 'boolean')
+        ? opts.compressed
+        : !!ECKey.compressByDefault;
     };
   
     /**
